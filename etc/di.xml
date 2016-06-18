@@ -8,8 +8,10 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 
+    <!--
     <preference for="Magento\Catalog\Block\Adminhtml\Form\Renderer\Fieldset\Element"
                 type="FireGento\ScopeHint\Block\AdminhtmlCatalogFormRendererFieldsetElement" />
+                -->
 
     <preference for="Magento\Config\Block\System\Config\Form\Field"
                 type="FireGento\ScopeHint\Block\AdminhtmlSystemConfigFormField" />

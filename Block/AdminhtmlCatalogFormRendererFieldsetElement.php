@@ -27,7 +27,7 @@ class AdminhtmlCatalogFormRendererFieldsetElement
      *
      * @return string
      */
-    public function getScopeLabel()
+    public function getElementLabelHtml()
     {
         $html = parent::getScopeLabel();
 

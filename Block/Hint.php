@@ -7,12 +7,14 @@ class Hint   extends \Magento\Framework\View\Element\Template
     protected $_fullStoreNames = array();
     protected $registry;
     protected $product;
+    protected $category;
 
 
-    public function __construct(Context $context,\Magento\Framework\Registry $registry,\Magento\Catalog\Model\Product $product,array $data = [])
+    public function __construct(Context $context,\Magento\Framework\Registry $registry,\Magento\Catalog\Model\Product $product,\Magento\Catalog\Model\Category $category,array $data = [])
     {
         parent::__construct($context, $data);
         $this->product = $product;
+        $this->category = $category;
         $this->registry = $registry;
 
 
@@ -217,7 +219,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
 
     /**
      * @param \Magento\Store\Api\Data\StoreInterface $store
-     * @return Mage_Catalog_Model_Product
+     * @return \Magento\Catalog\Model\Product
      */
     protected function _getProduct(\Magento\Store\Api\Data\StoreInterface $store = null)
     {
@@ -228,7 +230,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
         }
 
         if (is_null($this->registry->registry('product_' . $storeId))) {
-            /** @var $product Mage_Catalog_Model_Product */
+            /** @var $product \Magento\Catalog\Model\Product */
             $product = $this->product;
             $product->setStoreId($storeId);
             $this->registry->register('product_' . $storeId, $product->load($this->getEntityId()));
@@ -239,7 +241,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
 
     /**
      * @param \Magento\Store\Api\Data\StoreInterface $store
-     * @return Mage_Catalog_Model_Category
+     * @return \Magento\Catalog\Model\Category
      */
     protected function _getCategory(\Magento\Store\Api\Data\StoreInterface $store = null)
     {
@@ -250,8 +252,8 @@ class Hint   extends \Magento\Framework\View\Element\Template
         }
 
         if (is_null($this->registry->registry('category_' . $storeId))) {
-            /** @var $category Mage_Catalog_Model_Category */
-            $category = Mage::getModel('catalog/category');
+            /** @var $category \Magento\Catalog\Model\Category */
+            $category = $this->category;
             $category->setStoreId($storeId);
             $this->registry->register('category_' . $storeId, $category->load($this->getEntityId()));
         }
