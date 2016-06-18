@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category   AvS
+ * @package    AvS_ScopeHint
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author     Andreas von Studnitz <avs@avs-webentwicklung.de>
+ */
+ -->
+<layout>
+    <adminhtml_system_config_edit>
+        <reference name="head">
+            <action method="addJs"><file>scopehint/tooltip.js</file></action>
+        </reference>
+    </adminhtml_system_config_edit>
+    <adminhtml_catalog_product_edit>
+        <reference name="head">
+            <action method="addJs"><file>scopehint/tooltip.js</file></action>
+        </reference>
+    </adminhtml_catalog_product_edit>
+    <adminhtml_catalog_category_edit>
+        <reference name="head">
+            <action method="addJs"><file>scopehint/tooltip.js</file></action>
+        </reference>
+    </adminhtml_catalog_category_edit>
+</layout>
