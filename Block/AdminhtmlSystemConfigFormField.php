@@ -41,11 +41,11 @@ class AdminhtmlSystemConfigFormField
         $addInheritCheckbox = false;
         if ($element->getCanUseWebsiteValue()) {
             $addInheritCheckbox = true;
-            $checkboxLabel = Mage::helper('adminhtml')->__('Use Website');
+            $checkboxLabel = __('Use Website');
         }
         elseif ($element->getCanUseDefaultValue()) {
             $addInheritCheckbox = true;
-            $checkboxLabel = Mage::helper('adminhtml')->__('Use Default');
+            $checkboxLabel = __('Use Default');
         }
 
         if ($addInheritCheckbox) {
@@ -129,7 +129,7 @@ class AdminhtmlSystemConfigFormField
     protected function _getScopeHintHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         return $this->getLayout()
-            ->createBlock('scopehint/hint', 'scopehint')
+            ->createBlock('FireGento\ScopeHint\Block\Hint', 'scopehint_'.$this->_getConfigCode($element))
             ->setElement($element)
             ->setType('config')
             ->toHtml();
@@ -151,7 +151,7 @@ class AdminhtmlSystemConfigFormField
         $configCode = str_replace('][', '/', $configCode);
         $configCode = str_replace(']', '', $configCode);
         $configCode = str_replace('[', '', $configCode);
-        $configCode = Mage::app()->getRequest()->getParam('section') . '/' . $configCode;
+        $configCode = $this->_request->getParam('section') . '/' . $configCode;
         return $configCode;
     }
 

@@ -1,10 +1,22 @@
 <?php
 namespace FireGento\ScopeHint\Block;
-
+use Magento\Framework\View\Element\Template\Context;
 class Hint   extends \Magento\Framework\View\Element\Template 
 {
     /** @var array */
     protected $_fullStoreNames = array();
+    protected $registry;
+    protected $product;
+
+
+    public function __construct(Context $context,\Magento\Framework\Registry $registry,\Magento\Catalog\Model\Product $product,array $data = [])
+    {
+        parent::__construct($context, $data);
+        $this->product = $product;
+        $this->registry = $registry;
+
+
+    }
 
     /**
      * @return string
@@ -42,7 +54,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
         $configCode = str_replace('][', '/', $configCode);
         $configCode = str_replace(']', '', $configCode);
         $configCode = str_replace('[', '', $configCode);
-        $configCode = Mage::app()->getRequest()->getParam('section') . '/' . $configCode;
+        $configCode = $this->_request->getParam('section') . '/' . $configCode;
         return $configCode;
     }
 
@@ -59,7 +71,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
             /** @var Mage_Core_Model_Store $store */
             if ($this->_isValueChanged($store, $website)) {
 
-                $changedStores[Mage::helper('scopehint')->__('Store View: %s', $this->_getFullStoreName($store))] = $this->_getReadableConfigValue($store);
+                $changedStores[__('Store View: %s', $this->_getFullStoreName($store))] = $this->_getReadableConfigValue($store);
             }
         }
         return $changedStores;
@@ -75,12 +87,12 @@ class Hint   extends \Magento\Framework\View\Element\Template
         switch ($this->getType()) {
             case 'config':
 
-                foreach (Mage::app()->getWebsites() as $website) {
+                foreach ($this->_storeManager->getWebsites() as $website) {
 
                     /** @var Mage_Core_Model_Website $website */
                     if ($this->_isValueChanged($website)) {
 
-                        $changedScopes[Mage::helper('scopehint')->__('Website: %s', $website->getName())] = $this->_getReadableConfigValue($website);
+                        $changedScopes[(string)__('Website: %1', $website->getName())] =  $this->_getReadableConfigValue($website);
                     }
 
                     foreach ($website->getStores() as $store) {
@@ -88,7 +100,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
                         /** @var Mage_Core_Model_Store $store */
                         if ($this->_isValueChanged($store, $website)) {
 
-                            $changedScopes[Mage::helper('scopehint')->__('Store View: %s', $this->_getFullStoreName($store))] = $this->_getReadableConfigValue($store);
+                            $changedScopes[(string)__('Store View: %1', $this->_getFullStoreName($store))] = $this->_getReadableConfigValue($store);
                         }
                     }
                 }
@@ -97,12 +109,12 @@ class Hint   extends \Magento\Framework\View\Element\Template
             case 'product':
             case 'category':
 
-                foreach (Mage::app()->getStores() as $store) {
+                foreach ($this->_storeManager->getStores() as $store) {
 
                     /** @var Mage_Core_Model_Store $store */
                     if ($this->_isValueChanged($store)) {
 
-                        $changedScopes[Mage::helper('scopehint')->__('Store View: %s', $this->_getFullStoreName($store))] = $this->_getReadableConfigValue($store);
+                        $changedScopes[(string)__('Store View: %s', $this->_getFullStoreName($store))] = $this->_getReadableConfigValue($store);
                     }
                 }
                 break;
@@ -118,7 +130,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
      */
     protected function _isValueChanged($scope1, $scope2 = null)
     {
-        if ($this->getType() != 'config' && $scope1 instanceof Mage_Core_Model_Website) {
+        if ($this->getType() != 'config' && $scope1 instanceof \Magento\Store\Api\Data\WebsiteInterface) {
             // products and categories don't have a website scope
             return false;
         }
@@ -140,11 +152,24 @@ class Hint   extends \Magento\Framework\View\Element\Template
                 $configCode = $this->_getConfigCode();
 
                 if (is_null($scope)) {
-                    return (string)Mage::getConfig()->getNode('default/'.$configCode);
-                } else if ($scope instanceof Mage_Core_Model_Store) {
-                    return (string)Mage::getConfig()->getNode('stores/'.$scope->getCode().'/'.$configCode);
-                } else if ($scope instanceof Mage_Core_Model_Website) {
-                    return (string)Mage::getConfig()->getNode('websites/'.$scope->getCode().'/'.$configCode);
+                    return $this->_scopeConfig->getValue(
+                        $configCode,
+                        'default'
+                    );
+
+                } else if ($scope instanceof \Magento\Store\Api\Data\StoreInterface) {
+
+                    return $this->_scopeConfig->getValue(
+                        $configCode,
+                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                        $scope->getCode()
+                    );
+                } else if ($scope instanceof \Magento\Store\Api\Data\WebsiteInterface) {
+                    return $this->_scopeConfig->getValue(
+                        $configCode,
+                        \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                        $scope->getCode()
+                    );
                 }
                 break;
 
@@ -159,7 +184,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
                         return implode(',', $value);
                     }
                     return $value;
-                } else if ($scope instanceof Mage_Core_Model_Store) {
+                } else if ($scope instanceof \Magento\Store\Api\Data\StoreInterface) {
                     $value = $this->_getProduct($scope)->getData($attributeName);
                     if (is_array($value)) {
                         if (is_array($value[0])) {
@@ -179,7 +204,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
                         return implode(',', $value);
                     }
                     return $value;
-                } else if ($scope instanceof Mage_Core_Model_Store) {
+                } else if ($scope instanceof \Magento\Store\Api\Data\StoreInterface) {
                     $value = $this->_getCategory($scope)->getData($attributeName);
                     if (is_array($value)) {
                         return implode(',', $value);
@@ -191,10 +216,10 @@ class Hint   extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param Mage_Core_Model_Store $store
+     * @param \Magento\Store\Api\Data\StoreInterface $store
      * @return Mage_Catalog_Model_Product
      */
-    protected function _getProduct(Mage_Core_Model_Store $store = null)
+    protected function _getProduct(\Magento\Store\Api\Data\StoreInterface $store = null)
     {
         if (is_null($store)) {
             $storeId = 0;
@@ -202,21 +227,21 @@ class Hint   extends \Magento\Framework\View\Element\Template
             $storeId = $store->getId();
         }
 
-        if (is_null(Mage::registry('product_' . $storeId))) {
+        if (is_null($this->registry->registry('product_' . $storeId))) {
             /** @var $product Mage_Catalog_Model_Product */
-            $product = Mage::getModel('catalog/product');
+            $product = $this->product;
             $product->setStoreId($storeId);
-            Mage::register('product_' . $storeId, $product->load($this->getEntityId()));
+            $this->registry->register('product_' . $storeId, $product->load($this->getEntityId()));
         }
 
-        return Mage::registry('product_' . $storeId);
+        return $this->registry->registry('product_' . $storeId);
     }
 
     /**
-     * @param Mage_Core_Model_Store $store
+     * @param \Magento\Store\Api\Data\StoreInterface $store
      * @return Mage_Catalog_Model_Category
      */
-    protected function _getCategory(Mage_Core_Model_Store $store = null)
+    protected function _getCategory(\Magento\Store\Api\Data\StoreInterface $store = null)
     {
         if (is_null($store)) {
             $storeId = 0;
@@ -224,18 +249,18 @@ class Hint   extends \Magento\Framework\View\Element\Template
             $storeId = $store->getId();
         }
 
-        if (is_null(Mage::registry('category_' . $storeId))) {
+        if (is_null($this->registry->registry('category_' . $storeId))) {
             /** @var $category Mage_Catalog_Model_Category */
             $category = Mage::getModel('catalog/category');
             $category->setStoreId($storeId);
-            Mage::register('category_' . $storeId, $category->load($this->getEntityId()));
+            $this->registry->register('category_' . $storeId, $category->load($this->getEntityId()));
         }
 
-        return Mage::registry('category_' . $storeId);
+        return $this->registry->registry('category_' . $storeId);
     }
 
     /**
-     * @param Mage_Core_Model_Store|Mage_Core_Model_Website|null $scope
+     * @param \Magento\Store\Api\Data\StoreInterface|Mage_Core_Model_Website|null $scope
      * @return string
      */
     protected function _getReadableConfigValue($scope)
@@ -271,7 +296,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
      */
     protected function _getHintHtml($changedScopes)
     {
-        $text = Mage::helper('scopehint')->__('Changes in:') . '<br />';
+        $text = __('Changes in:') . '<br />';
 
         foreach($changedScopes as $scope => $scopeValue) {
 
@@ -281,14 +306,15 @@ class Hint   extends \Magento\Framework\View\Element\Template
                 . '<br />';
         }
 
-        $iconurl = Mage::getBaseUrl('skin') . 'adminhtml/default/default/images/note_msg_icon.gif';
+        //$iconurl = $this->_storeManager->getStore()->getBaseUrl('skin') . 'adminhtml/default/default/images/note_msg_icon.gif';
+        $iconurl = $this->getViewFileUrl('images/note_msg_icon.gif');
         $html = '<img class="scopehint-icon" src="' . $iconurl . '" title="' . $text . '" alt="' . $text . '"/>';
 
         return $html;
     }
 
     /**
-     * @param Mage_Core_Model_Store $store
+     * @param \Magento\Store\Api\Data\StoreInterface $store
      * @return string
      */
     protected function _getFullStoreName($store)
@@ -316,7 +342,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
      */
     protected function _isWebsiteScope()
     {
-        return (Mage::app()->getRequest()->getParam('website') && !$this->_isStoreScope());
+        return ($this->_request->getParam('website') && !$this->_isStoreScope());
     }
 
     /**
@@ -324,7 +350,7 @@ class Hint   extends \Magento\Framework\View\Element\Template
      */
     protected function _isStoreScope()
     {
-        return ((bool)Mage::app()->getRequest()->getParam('store'));
+        return ((bool)$this->_request->getParam('store'));
     }
 
     /**
@@ -332,8 +358,8 @@ class Hint   extends \Magento\Framework\View\Element\Template
      */
     protected function getWebsite()
     {
-        $websiteCode = Mage::app()->getRequest()->getParam('website');
-        return Mage::app()->getWebsite($websiteCode);
+        $websiteCode = $this->_request->getParam('website');
+        return $this->_storeManager->getWebsite($websiteCode);
     }
 
     /**
@@ -342,9 +368,9 @@ class Hint   extends \Magento\Framework\View\Element\Template
     protected function getEntityId()
     {
         if ($this->getType() == 'product') {
-            return intval($this->getRequest()->getParam('id'));
+            return intval($this->_request->getParam('id'));
         } else {
-            return Mage::registry('current_category')->getId();
+            return $this->registry->registry('current_category')->getId();
         }
     }
 

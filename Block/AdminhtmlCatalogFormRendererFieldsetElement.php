@@ -6,10 +6,20 @@
  *  
  */
 
+
 namespace FireGento\ScopeHint\Block;
+
+use \Magento\Backend\Block\Template\Context;
 class AdminhtmlCatalogFormRendererFieldsetElement
     extends  \Magento\Catalog\Block\Adminhtml\Form\Renderer\Fieldset\Element
 {
+    protected $registry;
+    public function __construct(Context $context,\Magento\Framework\Registry $registry,  array $data = [])
+    {
+        parent::__construct($context, $data);
+        $this->registry = $registry;
+    }
+
     /**
      * Retrieve label of attribute scope
      *
@@ -35,13 +45,13 @@ class AdminhtmlCatalogFormRendererFieldsetElement
      */
     protected function _getScopeHintHtml($element)
     {
-        if (Mage::registry('current_category')) {
+        if ($this->registry->registry('current_category')) {
             $type = 'category';
         } else {
             $type = 'product';
         }
         return $this->getLayout()
-            ->createBlock('scopehint/hint', 'scopehint')
+            ->createBlock('FireGento\ScopeHint\Block\Hint', 'scopehint_'.$this->getElement()->getId())
             ->setElement($element)
             ->setType($type)
             ->toHtml();
