@@ -6,7 +6,7 @@
  *  
  */
 
-namespace Firegento\Scopehint\Block;
+namespace Firegento\ScopeHint\Block;
 class AdminhtmlCatalogFormRendererFieldsetElement
     extends  \Magento\Catalog\Block\Adminhtml\Form\Renderer\Fieldset\Element
 {

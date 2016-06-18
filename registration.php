@@ -8,6 +8,6 @@
 
 \Magento\Framework\Component\ComponentRegistrar::register(
     \Magento\Framework\Component\ComponentRegistrar::MODULE,
-    'Firegento_Scopehint',
+    'Firegento_ScopeHint',
     __DIR__
 );

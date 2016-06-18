@@ -8,9 +8,9 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Magento\Config\Block\System\Config\Form\Field"
-                type="Firegento\Scopehint\Block\AdminhtmlCatalogFormRendererFieldsetElement" />
+                type="Firegento\ScopeHint\Block\AdminhtmlCatalogFormRendererFieldsetElement" />
 
     <preference for="\Magento\Catalog\Block\Adminhtml\Form\Renderer\Fieldset\Element"
-                type="Firegento\Scopehint\Block\AdminhtmlSystemConfigFormField" />
+                type="Firegento\ScopeHint\Block\AdminhtmlSystemConfigFormField" />
 
 </config>
