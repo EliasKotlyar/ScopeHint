@@ -1,0 +1,25 @@
+{
+  "name": "firegento/scopehint",
+  "description": "Creates a warning if a configuration setting, product data or category data is overwritten on a lower level (website or store view)",
+  "homepage": "https://github.com/magento-hackathon/FireGento_FastSimpleImport2_Demo",
+  "require": {
+    "php": "~5.5.0|~5.6.0|~7.0.0"
+  },
+  "type": "magento2-module",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Team FireGento",
+      "email": "team@firegento.com"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "FireGento\\ScopeHint\\": ""
+    }
+  }
+}
+
