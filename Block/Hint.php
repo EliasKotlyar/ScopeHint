@@ -1,5 +1,5 @@
 <?php
-namespace Firegento\ScopeHint\Block;
+namespace FireGento\ScopeHint\Block;
 
 class Hint   extends \Magento\Framework\View\Element\Template 
 {

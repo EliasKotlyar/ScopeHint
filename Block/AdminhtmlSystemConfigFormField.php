@@ -6,7 +6,7 @@
  *
  */
 
-namespace Firegento\ScopeHint\Block;
+namespace FireGento\ScopeHint\Block;
 
 /**
  * Render config field; hint added when config value is overwritten in a scope below
